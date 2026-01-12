@@ -120,7 +120,7 @@ class ProjectPage:
         # Swap Amount
         amount_input = self.page.get_by_placeholder("0.00").first
         expect(amount_input).to_be_visible(timeout=30000)
-        amount_input.fill("0.001")
+        amount_input.fill("0.005")
         time.sleep(2)
         # Swap button
         #swap = self.page.locator(ethereal.ARC_SWAP_BTN)
