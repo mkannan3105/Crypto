@@ -132,11 +132,13 @@ class ProjectPage:
         approve_eurc = self.page.get_by_role("button", name="Approve EURC")
         if approve_eurc.is_visible():
             self.page.get_by_role("button", name="Approve EURC").click()
+            time.sleep(2)
             self.wallet_confirmation_pop()
-            time.sleep(1)
             self.page.get_by_role("button", name="Swap").click()
+            self.wallet_confirmation_pop()
         else:
             self.page.get_by_role("button", name="Swap").click()
+            time.sleep(2)
             self.wallet_confirmation_pop()
         print("Swap successful")
         # Add Pools
@@ -293,11 +295,14 @@ class ProjectPage:
         self.page.get_by_test_id("rk-wallet-option-metaMask").click()
         # Handle MetaMask connection popup
         self.wallet_connect_pop()
+        time.sleep(2)
         # Handle transaction approve popup
         self.wallet_confirmation_pop()
+        time.sleep(2)
         # Handle transaction approve popup
         self.wallet_approve_pop()
-        #self.page.pause()
+        time.sleep(2)
+        self.page.pause()
         #self.page.get_by_role("button", name="Claim X1T").click()
         #self.page.get_by_role("button", name="Request").click()
         #time.sleep(2)
@@ -305,33 +310,51 @@ class ProjectPage:
         #    self.page.locator(".Cross > path").click(timeout=20000)
         #self.page.pause()
         self.page.get_by_role("button", name="Get ECO Points").click()
-        time.sleep(2)
+        time.sleep(3)
         self.page.evaluate("window.scrollBy(0, 800)")
-        time.sleep(1)
+        time.sleep(3)
         #self.page.pause()
         #self.page.get_by_role("button", name="Claim", exact=True).click()
         #self.page.get_by_role("button", name="Claim").click()
-        self.page.locator("//button[text()='Claim']").click()
+        #self.page.locator("//button[text()='Claim']").click()
+        self.page.pause()
+        """
         self.page.locator(
             "div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
-        time.sleep(2)
+        #time.sleep(1)
         self.page.get_by_role("button", name="Request").click()
-        time.sleep(2)
+        #time.sleep(1)
         self.page.locator(".Cross > path").click()
-        time.sleep(2)
+        #page.locator(".Cross").click()
         self.page.locator("//button[text()='Claim']").click()
-        time.sleep(2)
         self.page.locator(
             "div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
-        time.sleep(2)
-        self.page.get_by_role("button", name="0,05 X1T").click()
-        time.sleep(2)
+        self.page.get_by_role("button", name="1,0 X1T").click()
         self.page.get_by_role("button", name="Random Address").click()
-        time.sleep(2)
         self.page.get_by_role("button", name="Send X1T Coins").click()
-        time.sleep(2)
+        """
+        self.page.pause()
+        """
+        #time.sleep(2)
+        #self.page.locator("//button[text()='Claim']").click()
+        #time.sleep(1)
+        self.page.locator(
+            "div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+        #time.sleep(1)
+        self.page.locator("//button[text()='Claim']").click()
+        self.page.pause()
+        self.page.get_by_role("button", name="0,05 X1T").click()
+        #time.sleep(1)
+        self.page.get_by_role("button", name="Random Address").click()
+        #time.sleep(1)
+        self.page.get_by_role("button", name="Send X1T Coins").click()
+        #time.sleep(1)
         # Handle transaction approve popup
         self.wallet_confirmation_pop()
         self.page.locator(".Cross").click()
-        time.sleep(2)
+        #time.sleep(1)
         self.page.locator("//button[text()='Claim']").click()
+        """
+
+    def testnet_aixcrypto(self):
+        self.page.pause()
