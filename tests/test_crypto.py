@@ -76,7 +76,7 @@ def testnet_rise():
 
 def testnet_arc_network():
     """Test case for Arc Network flow."""
-    for i in range(134, 180):
+    for i in range(0, 180):
         playwright, browser, page = setup(i)
         project = ProjectPage(page)
         try:
@@ -93,7 +93,7 @@ def testnet_arc_network():
 
 def testnet_hotstuff_trade():
     """Test case for hot stuff trade."""
-    for i in range(0, 180):
+    for i in range(5, 180):
         playwright, browser, page = setup(i)
         project = ProjectPage(page)
         try:
@@ -108,7 +108,7 @@ def testnet_hotstuff_trade():
 
 def testnet_x1ecochain():
     """Test case for x1ecochain"""
-    for i in range(22, 180):
+    for i in range(68, 180):
         playwright, browser, page = setup(i)
         project = ProjectPage(page)
         try:
@@ -123,7 +123,7 @@ def testnet_x1ecochain():
 
 def testnet_aixcrypto():
     """Test case for x1ecochain"""
-    for i in range(1, 180):
+    for i in range(4, 180):
         playwright, browser, page = setup(i)
         project = ProjectPage(page)
         try:
@@ -140,8 +140,8 @@ def testnet_aixcrypto():
 if __name__ == "__main__":
     #testnet_ethereal_trade()
     #testnet_rise()
-    testnet_arc_network()
+    #testnet_arc_network()
     #testnet_hotstuff_trade()
-    #testnet_x1ecochain()
+    testnet_x1ecochain()
     #testnet_aixcrypto()
 
