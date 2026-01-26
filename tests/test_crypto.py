@@ -37,20 +37,9 @@ class TestCrypto:
 
     def test_ethereal_trade(self):
         playwright, browser, page = self.setup()
-
         page.goto(ETHEREARL_URL)
         project = ProjectPage(page)
         project.ethereal_trade()
-
-        self.teardown(playwright, browser)
-
-    def test_rise(self):
-        playwright, browser, page = self.setup()
-
-        page.goto("https://gaspump.network/swap")
-        project = ProjectPage(page)
-        project.testnet_rise()
-
         self.teardown(playwright, browser)
 
     def test_arc_network(self):
@@ -81,18 +70,16 @@ class TestCrypto:
         for i in range(120, 180):
             playwright, browser, page = self.setup(i)
             try:
-                time.sleep(10)
                 page.goto("https://t.x1.one/?rcode=9Jd82wqL")
                 ProjectPage(page).testnet_x1ecochain()
                 print("✅ Completed wallet", i)
-            #except Exception as e:
-            except Exception:
+            except Exception as e:
                 print("❌ Wallet failed", i)
             finally:
                 self.teardown(playwright, browser)
 
     def test_aixcrypto(self):
-        for i in range(4, 180):
+        for i in range(138, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://hub.aixcrypto.ai/?ref=04443264-f475-4b94-9b28-11db44ac57d7")
@@ -116,7 +103,7 @@ class TestCrypto:
                 self.teardown(playwright, browser)
 
     def test_skale(self):
-        for i in range(19, 180):
+        for i in range(0, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://loyalty.skale.space/loyalty?referral_code=OBG8ZR9F")
