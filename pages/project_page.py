@@ -247,6 +247,7 @@ class ProjectPage:
         print("Deposit Successful")
 
     def testnet_x1ecochain(self):
+        time.sleep(2)
         self.page.get_by_role("button", name="Connect").click()
         self.page.get_by_test_id("rk-wallet-option-metaMask").click()
         # Handle MetaMask connection popup
@@ -432,5 +433,4 @@ class ProjectPage:
         locator = self.page.get_by_text("Congrats on the successful")
         locator.wait_for(state="visible", timeout=60000)
         self.page.get_by_role("button", name="Close").click()
-        self.page.get_by_role("button", name="Claim").click()
 
