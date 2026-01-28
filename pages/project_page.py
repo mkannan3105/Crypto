@@ -79,8 +79,10 @@ class ProjectPage:
         # Handle transaction approve popup
         self.wallet_approve_pop()
         time.sleep(2)
+        #self.page.pause()
         #self.page.get_by_role("link", name="Launch App").click()
-        self.page.get_by_role("button").filter(has_text=re.compile(r"^$")).nth(1).click()
+        #self.page.get_by_role("button").filter(has_text=re.compile(r"^$")).nth(1).click()
+        self.page.get_by_role("link", name="Swap").click()
         # Swap Amount
         amount_input = self.page.get_by_placeholder("0.00").first
         expect(amount_input).to_be_visible(timeout=30000)
@@ -201,6 +203,7 @@ class ProjectPage:
         if join_Code.is_visible():
            self.page.get_by_role("button", name="Join with Code").click()
            time.sleep(1)
+        self.page.pause()
         self.page.get_by_role("button", name="Faucet").first.click()
         self.page.get_by_role("button", name="Claim Testnet Tokens").click()
         self.page.get_by_role("button", name="Faucet").first.click()
@@ -218,12 +221,24 @@ class ProjectPage:
         if self.page.get_by_role("button", name="Claim Testnet Tokens").is_visible():
             self.page.get_by_role("button", name="Claim Testnet Tokens").click()
             time.sleep(1)
+        self.page.get_by_role("button", name="BTC-PERP BTC-PERP 50x").click()
+        self.page.get_by_label("BTC-PERP50x").get_by_text("SOL-PERP").click()
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
         self.page.get_by_role("button", name="Buy/Long").click()
         self.page.get_by_role("button", name="Buy / Long").click()
         self.page.get_by_role("button", name="Sell/Short").click()
         self.page.get_by_role("button", name="Sell / Short").click()
-        self.page.get_by_role("button", name="BTC-PERP BTC-PERP 50x").click()
-        self.page.get_by_label("BTC-PERP50x").get_by_text("ETH-PERP25x").click()
+        self.page.get_by_role("button", name="SOL-PERP SOL-PERP 10x").click()
+        self.page.get_by_label("SOL-PERP10x").get_by_text("HYPE-PERP").click()
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
+        self.page.get_by_role("button", name="Buy/Long").click()
+        self.page.get_by_role("button", name="Buy / Long").click()
+        self.page.get_by_role("button", name="Sell/Short").click()
+        self.page.get_by_role("button", name="Sell / Short").click()
+        self.page.get_by_role("button", name="HYPE-PERP HYPE-PERP 10x").click()
+        self.page.get_by_label("HYPE-PERP10x").get_by_text("ETH-PERP").click()
         self.page.get_by_role("textbox").first.click()
         self.page.get_by_role("textbox").first.fill("1000")
         self.page.get_by_role("button", name="Buy/Long").click()
@@ -231,9 +246,9 @@ class ProjectPage:
         self.page.get_by_role("button", name="Sell/Short").click()
         self.page.get_by_role("button", name="Sell / Short").click()
         self.page.get_by_role("button", name="ETH-PERP ETH-PERP 25x").click()
-        self.page.get_by_label("ETH-PERP25x").get_by_text("HYPE-PERP").click()
+        self.page.get_by_label("ETH-PERP25x").get_by_text("PAXG-PERP").click()
         self.page.get_by_role("textbox").first.click()
-        self.page.get_by_role("textbox").first.fill("10")
+        self.page.get_by_role("textbox").first.fill("1000")
         self.page.get_by_role("button", name="Buy/Long").click()
         self.page.get_by_role("button", name="Buy / Long").click()
         self.page.get_by_role("button", name="Sell/Short").click()
@@ -247,7 +262,9 @@ class ProjectPage:
         print("Deposit Successful")
 
     def testnet_x1ecochain(self):
-        time.sleep(2)
+        #self.page.pause()
+        locator = self.page.get_by_role("button", name="Connect")
+        locator.wait_for(state="visible", timeout=60000)
         self.page.get_by_role("button", name="Connect").click()
         self.page.get_by_test_id("rk-wallet-option-metaMask").click()
         # Handle MetaMask connection popup
@@ -263,18 +280,30 @@ class ProjectPage:
         time.sleep(1)
         self.page.evaluate("window.scrollBy(0, 800)")
         time.sleep(2)
+        locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']")
+        #self.page.pause()
+        locator.wait_for(state="visible", timeout=60000)
         self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
         time.sleep(2)
-        self.page.locator(
-            "div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
+        self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
         time.sleep(2)
         self.page.get_by_role("button", name="Request").click()
-        time.sleep(2)
+        time.sleep(3)
         self.page.locator(".Cross > path").click()
-        self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
-        time.sleep(2)
+        time.sleep(4)
+        locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
+        locator.wait_for(state="visible", timeout=60000)
         self.page.locator(
-            "div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+            "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+        time.sleep(1)
+        if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
+            self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
+        else:
+            self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+        #self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+        #time.sleep(2)
+        #self.page.locator(
+        #    "div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
         time.sleep(1)
         self.page.get_by_role("button", name="1,0 X1T").click()
         time.sleep(1)
@@ -300,9 +329,11 @@ class ProjectPage:
         self.wallet_confirmation_next_pop()
         # Confirm MetaMask transaction
         self.wallet_confirmation_pop()
-        if self.page.locator("[data-testid='confirm-footer-button']").is_visible():
-            # Confirm MetaMask transaction
-            self.wallet_confirmation_pop()
+        #if self.page.locator("[data-testid='confirm-footer-button']").is_visible():
+        #    # Confirm MetaMask transaction
+        #    self.wallet_confirmation_pop()
+        #    time.sleep(10)
+        time.sleep(10)
         self.page.get_by_role("button", name="Go back").click()
         self.page.get_by_role("spinbutton").click()
         self.page.get_by_role("spinbutton").fill("0.01")
