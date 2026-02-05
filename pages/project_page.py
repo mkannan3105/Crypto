@@ -13,7 +13,7 @@ class ProjectPage:
         time.sleep(2)
         popup = self.page.context.wait_for_event("page")
         popup.wait_for_load_state()
-        popup.wait_for_selector("//*[@data-testid='confirm-btn']", timeout=50000)
+        popup.wait_for_selector("//*[@data-testid='confirm-btn']", timeout=30000)
         popup.get_by_test_id("confirm-btn").click()
         popup.close()
 
@@ -22,7 +22,7 @@ class ProjectPage:
          # Confirm MetaMask transaction
          popup = self.page.context.wait_for_event("page")
          popup.wait_for_load_state()
-         popup.wait_for_selector("[data-testid='confirm-footer-button']", timeout=50000)
+         popup.wait_for_selector("[data-testid='confirm-footer-button']", timeout=30000)
          popup.locator("[data-testid='confirm-footer-button']").click()
          popup.close()
 
@@ -31,7 +31,7 @@ class ProjectPage:
          time.sleep(2)
          popup = self.page.context.wait_for_event("page")
          popup.wait_for_load_state()
-         popup.wait_for_selector("[data-testid='page-container-footer-next']", timeout=50000)
+         popup.wait_for_selector("[data-testid='page-container-footer-next']", timeout=30000)
          popup.locator("[data-testid='page-container-footer-next']").click()
          popup.close()
 
@@ -39,7 +39,7 @@ class ProjectPage:
          # Handle transaction confirmation popup
          time.sleep(2)
          popup = self.page.context.wait_for_event("page")
-         popup.wait_for_selector("[data-testid='confirmation-submit-button']", timeout=100000)
+         popup.wait_for_selector("[data-testid='confirmation-submit-button']", timeout=30000)
          popup.locator("[data-testid='confirmation-submit-button']").click()
 
     def ethereal_trade(self):
@@ -203,7 +203,6 @@ class ProjectPage:
         if join_Code.is_visible():
            self.page.get_by_role("button", name="Join with Code").click()
            time.sleep(1)
-        self.page.pause()
         self.page.get_by_role("button", name="Faucet").first.click()
         self.page.get_by_role("button", name="Claim Testnet Tokens").click()
         self.page.get_by_role("button", name="Faucet").first.click()
@@ -271,18 +270,18 @@ class ProjectPage:
         self.wallet_connect_pop()
         time.sleep(2)
         # Handle transaction approve popup
-        self.wallet_confirmation_pop()
-        time.sleep(2)
+        #self.wallet_confirmation_pop()
+        #time.sleep(2)
         # Handle transaction approve popup
-        self.wallet_approve_pop()
-        time.sleep(2)
+        #self.wallet_approve_pop()
+        #time.sleep(2)
         self.page.get_by_role("button", name="Get ECO Points").click()
         time.sleep(1)
         self.page.evaluate("window.scrollBy(0, 800)")
         time.sleep(2)
         locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']")
         #self.page.pause()
-        locator.wait_for(state="visible", timeout=60000)
+        locator.wait_for(state="visible", timeout=30000)
         self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
         time.sleep(2)
         self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
@@ -292,7 +291,7 @@ class ProjectPage:
         self.page.locator(".Cross > path").click()
         time.sleep(4)
         locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
-        locator.wait_for(state="visible", timeout=60000)
+        locator.wait_for(state="visible", timeout=30000)
         self.page.locator(
             "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
         time.sleep(1)
@@ -464,4 +463,9 @@ class ProjectPage:
         locator = self.page.get_by_text("Congrats on the successful")
         locator.wait_for(state="visible", timeout=60000)
         self.page.get_by_role("button", name="Close").click()
+
+    def test_nexira(self):
+        time.sleep(2)
+        self.page.pause()
+
 
