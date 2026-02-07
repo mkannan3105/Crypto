@@ -74,7 +74,7 @@ class TestCrypto:
     def test_fhenix_parallel(self):
         url = "https://test.redact.money/"
         action = "test_fhenix"
-        wallets_to_run = list(range(0, 11))  # run wallet 0-9
+        wallets_to_run = list(range(2, 3))  # run wallet 0-9
         max_workers = 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in wallets_to_run:
@@ -83,14 +83,14 @@ class TestCrypto:
     def test_hotstuff_trade(self):
         url = "https://testnet.hotstuff.trade/join/mkannan3105"
         action = "testnet_hotstuff_trade"
-        wallets_to_run = list(range(0, 11))
+        wallets_to_run = list(range(5, 8))
         max_workers = 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in wallets_to_run:
                 executor.submit(self.run_wallet, i, url, action)
 
     def test_x1ecochain(self):
-        for i in range(0, 180):
+        for i in range(69, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://t.x1.one/?rcode=9Jd82wqL")

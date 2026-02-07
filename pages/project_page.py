@@ -268,54 +268,60 @@ class ProjectPage:
         self.page.get_by_test_id("rk-wallet-option-metaMask").click()
         # Handle MetaMask connection popup
         self.wallet_connect_pop()
-        time.sleep(2)
         # Handle transaction approve popup
-        #self.wallet_confirmation_pop()
-        #time.sleep(2)
+        self.wallet_confirmation_pop()
         # Handle transaction approve popup
-        #self.wallet_approve_pop()
-        #time.sleep(2)
+        self.wallet_approve_pop()
         self.page.get_by_role("button", name="Get ECO Points").click()
-        time.sleep(1)
         self.page.evaluate("window.scrollBy(0, 800)")
         time.sleep(2)
         locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']")
-        #self.page.pause()
         locator.wait_for(state="visible", timeout=30000)
         self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
-        time.sleep(2)
         self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
         time.sleep(2)
         self.page.get_by_role("button", name="Request").click()
-        time.sleep(3)
-        self.page.locator(".Cross > path").click()
-        time.sleep(4)
-        locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
-        locator.wait_for(state="visible", timeout=30000)
-        self.page.locator(
-            "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
         time.sleep(1)
-        if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
-            self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
+        max_x1t = self.page.locator("//span[text()='Your balance is above 500 X1t.']")
+        if max_x1t.is_visible():
+            self.page.locator(".Cross > path").click()
+            locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
+            locator.wait_for(state="visible", timeout=30000)
+            self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+            time.sleep(2)
+            if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
+               self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
+            else:
+               self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+            time.sleep(2)
+            self.page.get_by_placeholder("0.0").click()
+            self.page.get_by_placeholder("0.0").fill("499")
+            self.page.get_by_role("button", name="Random Address").click()
+            self.page.get_by_role("button", name="Send X1T Coins").click()
+            # Handle transaction approve popup
+            self.wallet_confirmation_pop()
+            self.page.locator(".Cross").click()
+            self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
+            time.sleep(4)
         else:
-            self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
-        #self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
-        #time.sleep(2)
-        #self.page.locator(
-        #    "div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
-        time.sleep(1)
-        self.page.get_by_role("button", name="1,0 X1T").click()
-        time.sleep(1)
-        self.page.get_by_role("button", name="Random Address").click()
-        time.sleep(1)
-        self.page.get_by_role("button", name="Send X1T Coins").click()
-        time.sleep(1)
-        # Handle transaction approve popup
-        self.wallet_confirmation_pop()
-        time.sleep(1)
-        self.page.locator(".Cross").click()
-        time.sleep(1)
-        self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
+            self.page.locator(".Cross > path").click()
+            locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
+            locator.wait_for(state="visible", timeout=30000)
+            self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+            if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
+               self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
+            else:
+               self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+            time.sleep(1)
+            self.page.get_by_role("button", name="1,0 X1T").click()
+            self.page.get_by_role("button", name="Random Address").click()
+            self.page.get_by_role("button", name="Send X1T Coins").click()
+            # Handle transaction approve popup
+            self.wallet_confirmation_pop()
+            self.page.locator(".Cross").click()
+            self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
 
     def test_fhenix(self):
         self.page.get_by_role("button", name="Connect Wallet", exact=True).click()
