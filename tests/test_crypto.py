@@ -55,8 +55,8 @@ class TestCrypto:
     def test_arc_network_parallel(self):
         url = "https://www.xylonet.xyz/points?ref=REF6AC9B3A6"
         action = "testnet_arc_network"
-        wallets_to_run = list(range(0, 180))  # run wallet 0-9
-        max_workers = 5
+        wallets_to_run = list(range(100, 180))  # run wallet 0-9
+        max_workers = 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = [executor.submit(self.run_wallet, i, url, action) for i in wallets_to_run]
             for future in as_completed(futures):
@@ -83,14 +83,14 @@ class TestCrypto:
     def test_hotstuff_trade(self):
         url = "https://testnet.hotstuff.trade/join/mkannan3105"
         action = "testnet_hotstuff_trade"
-        wallets_to_run = list(range(5, 8))
+        wallets_to_run = list(range(1, 2))
         max_workers = 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in wallets_to_run:
                 executor.submit(self.run_wallet, i, url, action)
 
     def test_x1ecochain(self):
-        for i in range(69, 180):
+        for i in range(134, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://t.x1.one/?rcode=9Jd82wqL")
@@ -101,13 +101,24 @@ class TestCrypto:
             finally:
                 self.teardown(playwright, browser)
 
-    def test_nexira(self):
-        for i in range(1, 2):
+    def test_veerarewards(self):
+        for i in range(0, 180):
             playwright, browser, page = self.setup(i)
             try:
-                #page.goto("https://www.nexira.ai/airdrops?refid=05Iadwrm")
-                page.goto("https://mail.google.com")
-                ProjectPage(page).test_nexira()
+                page.goto("https://hub.veerarewards.com/loyalty?referral_code=CCO013WD")
+                ProjectPage(page).test_veerarewards()
+                print("✅ Completed wallet", i)
+            except Exception as e:
+                print("❌ Wallet failed", i)
+            finally:
+                self.teardown(playwright, browser)
+
+    def test_decibel(self):
+        for i in range(7, 180):
+            playwright, browser, page = self.setup(i)
+            try:
+                page.goto("https://app.decibel.trade/trade/BTC-USD")
+                ProjectPage(page).test_decibel()
                 print("✅ Completed wallet", i)
             except Exception as e:
                 print("❌ Wallet failed", i)

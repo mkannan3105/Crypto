@@ -42,6 +42,13 @@ class ProjectPage:
          popup.wait_for_selector("[data-testid='confirmation-submit-button']", timeout=30000)
          popup.locator("[data-testid='confirmation-submit-button']").click()
 
+    def wallet_confirm_sign_in_pop(self):
+         # Handle transaction confirmation popup
+         time.sleep(2)
+         popup = self.page.context.wait_for_event("page")
+         popup.wait_for_selector("[data-testid='confirm-sign-in-confirm-snap-footer-button']", timeout=30000)
+         popup.locator("[data-testid='confirm-sign-in-confirm-snap-footer-button']").click()
+
     def ethereal_trade(self):
         """Click Connect and select MetaMask."""
         # Click Connect > MetaMask to trigger wallet popup
@@ -79,7 +86,6 @@ class ProjectPage:
         # Handle transaction approve popup
         self.wallet_approve_pop()
         time.sleep(2)
-        #self.page.pause()
         #self.page.get_by_role("link", name="Launch App").click()
         #self.page.get_by_role("button").filter(has_text=re.compile(r"^$")).nth(1).click()
         self.page.get_by_role("link", name="Swap").click()
@@ -90,16 +96,24 @@ class ProjectPage:
         time.sleep(2)
         self.page.evaluate("window.scrollBy(0, 500)")
         time.sleep(2)
+        #self.page.pause()
         approve_eurc = self.page.get_by_role("button", name="Approve EURC")
+        approve_usdc = self.page.get_by_role("button", name="Approve USDC")
         if approve_eurc.is_visible():
             self.page.get_by_role("button", name="Approve EURC").click()
-            time.sleep(2)
+            #time.sleep(2)
+            self.wallet_confirmation_pop()
+            self.page.get_by_role("button", name="Swap").click()
+            self.wallet_confirmation_pop()
+        if approve_usdc.is_visible():
+            self.page.get_by_role("button", name="Approve USDC").click()
+            #time.sleep(2)
             self.wallet_confirmation_pop()
             self.page.get_by_role("button", name="Swap").click()
             self.wallet_confirmation_pop()
         else:
             self.page.get_by_role("button", name="Swap").click()
-            time.sleep(2)
+            #time.sleep(2)
             self.wallet_confirmation_pop()
         print("Swap successful")
         # Add Pools
@@ -141,6 +155,7 @@ class ProjectPage:
         if button.is_visible():
             self.page.locator("//*[@class='text-gray-400']").click()
         print("Pools Added Successful")
+        """
         # Bridge
         self.page.get_by_role("link", name="Bridge").click()
         amount = self.page.get_by_placeholder("0.00")
@@ -187,7 +202,7 @@ class ProjectPage:
             # Handle transaction approve popup
             self.wallet_confirmation_pop()
         print("Vault Successful")
-
+        """
     def testnet_hotstuff_trade(self):
         time.sleep(1)
         self.page.get_by_role("button", name="Connect Wallet").click()
@@ -204,6 +219,14 @@ class ProjectPage:
            self.page.get_by_role("button", name="Join with Code").click()
            time.sleep(1)
         self.page.get_by_role("button", name="Faucet").first.click()
+        agree = self.page.locator("//*[contains(text(),'the following')]")
+        if agree.is_visible():
+            self.page.get_by_role("checkbox", name="You acknowledge that you have").check()
+            self.page.goto("https://testnet.hotstuff.trade/trade")
+            self.page.get_by_role("checkbox", name="This site uses cookies to").check()
+            self.page.get_by_role("button", name="Accept & Sign").click()
+            self.page.goto("chrome-extension://onpnjnjlblcdamkdicfgofabnjnloinf/notification.html#")
+            self.page.get_by_role("button", name="Faucet").first.click()
         self.page.get_by_role("button", name="Claim Testnet Tokens").click()
         self.page.get_by_role("button", name="Faucet").first.click()
         self.page.get_by_role("combobox").click()
@@ -220,38 +243,61 @@ class ProjectPage:
         if self.page.get_by_role("button", name="Claim Testnet Tokens").is_visible():
             self.page.get_by_role("button", name="Claim Testnet Tokens").click()
             time.sleep(1)
-        self.page.get_by_role("button", name="BTC-PERP BTC-PERP 50x").click()
-        self.page.get_by_label("BTC-PERP50x").get_by_text("SOL-PERP").click()
+        self.page.goto("https://testnet.hotstuff.trade/trade/BTC-PERP")
         self.page.get_by_role("textbox").first.click()
         self.page.get_by_role("textbox").first.fill("1000")
-        self.page.get_by_role("button", name="Buy/Long").click()
-        self.page.get_by_role("button", name="Buy / Long").click()
-        self.page.get_by_role("button", name="Sell/Short").click()
-        self.page.get_by_role("button", name="Sell / Short").click()
-        self.page.get_by_role("button", name="SOL-PERP SOL-PERP 10x").click()
-        self.page.get_by_label("SOL-PERP10x").get_by_text("HYPE-PERP").click()
+        if self.page.get_by_role("button", name="Enable Trading").is_visible():
+            self.page.get_by_role("button", name="Enable Trading").click()
+            self.page.get_by_role("button", name="Confirm").click()
+            # Handle transaction approve popup
+            self.wallet_confirmation_pop()
+        #self.page.pause()
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Long").click()
+        time.sleep(1)
+        self.page.get_by_role("tab", name="Short").click()
+        time.sleep(1)
         self.page.get_by_role("textbox").first.click()
         self.page.get_by_role("textbox").first.fill("1000")
-        self.page.get_by_role("button", name="Buy/Long").click()
-        self.page.get_by_role("button", name="Buy / Long").click()
-        self.page.get_by_role("button", name="Sell/Short").click()
-        self.page.get_by_role("button", name="Sell / Short").click()
-        self.page.get_by_role("button", name="HYPE-PERP HYPE-PERP 10x").click()
-        self.page.get_by_label("HYPE-PERP10x").get_by_text("ETH-PERP").click()
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Short").click()
+        time.sleep(1)
+        self.page.goto("https://testnet.hotstuff.trade/trade/ETH-PERP")
         self.page.get_by_role("textbox").first.click()
         self.page.get_by_role("textbox").first.fill("1000")
-        self.page.get_by_role("button", name="Buy/Long").click()
-        self.page.get_by_role("button", name="Buy / Long").click()
-        self.page.get_by_role("button", name="Sell/Short").click()
-        self.page.get_by_role("button", name="Sell / Short").click()
-        self.page.get_by_role("button", name="ETH-PERP ETH-PERP 25x").click()
-        self.page.get_by_label("ETH-PERP25x").get_by_text("PAXG-PERP").click()
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Long").click()
+        time.sleep(1)
+        self.page.get_by_role("tab", name="Short").click()
         self.page.get_by_role("textbox").first.click()
         self.page.get_by_role("textbox").first.fill("1000")
-        self.page.get_by_role("button", name="Buy/Long").click()
-        self.page.get_by_role("button", name="Buy / Long").click()
-        self.page.get_by_role("button", name="Sell/Short").click()
-        self.page.get_by_role("button", name="Sell / Short").click()
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Short").click()
+        time.sleep(1)
+        self.page.goto("https://testnet.hotstuff.trade/trade/HYPE-PERP")
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Long").click()
+        time.sleep(1)
+        self.page.get_by_role("tab", name="Short").click()
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Short").click()
+        time.sleep(1)
+        self.page.goto("https://testnet.hotstuff.trade/trade/SOL-PERP")
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Long").click()
+        time.sleep(1)
+        self.page.get_by_role("tab", name="Short").click()
+        self.page.get_by_role("textbox").first.click()
+        self.page.get_by_role("textbox").first.fill("1000")
+        self.page.get_by_role("button", name="Place Order").click()
+        self.page.get_by_role("button", name="Short").click()
+        time.sleep(1)
         print("Swap Successful")
         self.page.get_by_role("button", name="Vaults").click()
         self.page.locator("div").filter(has_text=re.compile(r"^Deposit$")).nth(1).click()
@@ -259,6 +305,7 @@ class ProjectPage:
         self.page.get_by_role("spinbutton").fill("100")
         self.page.get_by_role("button", name="Deposit").click()
         print("Deposit Successful")
+        time.sleep(2)
 
     def testnet_x1ecochain(self):
         #self.page.pause()
@@ -334,10 +381,6 @@ class ProjectPage:
         self.wallet_confirmation_next_pop()
         # Confirm MetaMask transaction
         self.wallet_confirmation_pop()
-        #if self.page.locator("[data-testid='confirm-footer-button']").is_visible():
-        #    # Confirm MetaMask transaction
-        #    self.wallet_confirmation_pop()
-        #    time.sleep(10)
         time.sleep(10)
         self.page.get_by_role("button", name="Go back").click()
         self.page.get_by_role("spinbutton").click()
@@ -470,8 +513,73 @@ class ProjectPage:
         locator.wait_for(state="visible", timeout=60000)
         self.page.get_by_role("button", name="Close").click()
 
-    def test_nexira(self):
+    def test_veerarewards(self):
+        time.sleep(3)
+        self.page.get_by_label("").get_by_text("Connect Wallet").click()
+        self.page.locator("a").filter(has_text="Connect with Ethereum").click()
+        self.page.get_by_text("MetaMaskInstalled").click()
+        # Handle MetaMask connection popup
+        self.wallet_connect_pop()
+        # Confirm MetaMask transaction
+        self.wallet_confirmation_pop()
+        self.page.evaluate("window.scrollBy(0, 1000)")
+        time.sleep(4)
+        self.page.get_by_role("button", name="Check in ").click()
+        locator = self.page.locator("//*[text()='Check-In Succeeded!']")
+        locator.wait_for(state="visible", timeout=40000)
+        self.page.get_by_role("button", name="").click()
+
+    def test_decibel(self):
+        self.page.get_by_role("button", name="Skip for now & follow later").click()
+        time.sleep(4)
+        self.page.locator("[id=\"tooltip:_r_0_:trigger\"]").click()
+        time.sleep(3)
+        self.page.get_by_role("button", name="Connect").click()
+        #time.sleep(2)
+        # Handle MetaMask connection popup
+        self.wallet_connect_pop()
+        self.page.get_by_role("button", name="Mint USDC").click()
+        self.page.get_by_role("button", name="Establish connection").click()
+        #self.page.pause()
+        # Confirm MetaMask transaction
+        self.wallet_confirm_sign_in_pop()
+        self.page.get_by_role("button", name="Mint USDC").click()
+        # Confirm MetaMask transaction
+        self.wallet_confirm_sign_in_pop()
+        # Confirm MetaMask transaction
+        self.wallet_confirm_sign_in_pop()
+        self.page.get_by_test_id("currency-selector").get_by_text("USD").click()
+        self.page.get_by_role("textbox", name="Order Size").click()
+        self.page.get_by_role("textbox", name="Order Size").fill("100")
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.locator("[id=\"radio-group:_R_abinpfiusnildb_:radio:sellShort\"]").click()
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.goto("https://app.decibel.trade/trade/APT-USD")
+        self.page.get_by_role("textbox", name="Order Size").click()
+        self.page.get_by_role("textbox", name="Order Size").fill("100")
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.locator("[id=\"radio-group:_R_abinpfiusnildb_:radio:sellShort\"]").click()
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.goto("https://app.decibel.trade/trade/ETH-USD")
+        self.page.get_by_role("textbox", name="Order Size").click()
+        self.page.get_by_role("textbox", name="Order Size").fill("100")
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.locator("[id=\"radio-group:_R_abinpfiusnildb_:radio:sellShort\"]").click()
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.goto("https://app.decibel.trade/trade/SOL-USD")
+        self.page.get_by_role("textbox", name="Order Size").click()
+        self.page.get_by_role("textbox", name="Order Size").fill("100")
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.locator("[id=\"radio-group:_R_abinpfiusnildb_:radio:sellShort\"]").click()
+        self.page.get_by_test_id("place-order-button").click()
+        self.page.get_by_role("link", name="Vaults").click()
+        self.page.get_by_role("cell", name="Decibel Protocol Vault").click()
+        self.page.goto("https://app.decibel.trade/vaults/0x85aa52ebfca6bbf9b51913e96f7e4565a3462be4c12d9ce40551478081a1d1e2")
+        self.page.get_by_role("textbox", name="Avail. to deposit").click()
+        self.page.get_by_role("textbox", name="Avail. to deposit").fill("100")
+        self.page.get_by_role("button", name="Deposit").nth(1).click()
         time.sleep(2)
-        self.page.pause()
+
+
 
 
