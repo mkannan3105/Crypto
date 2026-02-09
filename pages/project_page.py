@@ -348,15 +348,31 @@ class ProjectPage:
             self.page.get_by_role("button", name="Send X1T Coins").click()
             # Handle transaction approve popup
             self.wallet_confirmation_pop()
+            time.sleep(1)
             self.page.locator(".Cross").click()
+            time.sleep(1)
             self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
-            time.sleep(4)
+            time.sleep(1)
+            self.page.locator(
+                "div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
+            time.sleep(1)
+            self.page.get_by_role("button", name="Request").click()
+            time.sleep(1)
+            self.page.locator(".Cross > path").click()
+            locator = self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
+            locator.wait_for(state="visible", timeout=30000)
+            self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+
         else:
             self.page.locator(".Cross > path").click()
+            time.sleep(1)
             locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
             locator.wait_for(state="visible", timeout=30000)
             self.page.locator(
                 "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
+            time.sleep(1)
             if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
                self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
             else:
@@ -368,7 +384,9 @@ class ProjectPage:
             # Handle transaction approve popup
             self.wallet_confirmation_pop()
             self.page.locator(".Cross").click()
+            time.sleep(1)
             self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
+            time.sleep(1)
 
     def test_fhenix(self):
         self.page.get_by_role("button", name="Connect Wallet", exact=True).click()

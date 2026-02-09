@@ -13,26 +13,29 @@ class TestCrypto:
 
     def setup(self, i=0, clean_profile=True):
         profile_name = f"profile_{i}"
+        try:
+            playwright, browser = launch_browser(
+                profile_name=profile_name,
+                clean_profile=clean_profile,
+                headless=False
+            )
+            metamask_tab = browser.wait_for_event("page")
+            if "chrome-extension://" not in metamask_tab.url:
+                raise Exception("MetaMask extension did not load")
 
-        playwright, browser = launch_browser(
-            profile_name=profile_name,
-            clean_profile=clean_profile,
-            headless=False
-        )
-        metamask_tab = browser.wait_for_event("page")
-        if "chrome-extension://" not in metamask_tab.url:
-            raise Exception("MetaMask extension did not load")
+            for p in browser.pages[:-1]:
+                time.sleep(1)
+                p.close()
 
-        for p in browser.pages[:-1]:
-            time.sleep(1)
-            p.close()
-
-        metamask_tab.reload()
-        page = metamask_tab
-        metamask = MetaMaskPage(page)
-        print(self.SEED_WORDS_LIST[i])
-        metamask.import_wallet(self.SEED_WORDS_LIST[i], METAMASK_PASSWORD)
-        return playwright, browser, page
+            metamask_tab.reload()
+            page = metamask_tab
+            metamask = MetaMaskPage(page)
+            print(self.SEED_WORDS_LIST[i])
+            metamask.import_wallet(self.SEED_WORDS_LIST[i], METAMASK_PASSWORD)
+            return playwright, browser, page
+        except Exception as e:
+            print(f"❌ Wallet {i} - MetaMask setup not working: {e}")
+            return None, None, None
 
     def teardown(self, playwright, browser):
         browser.close()
@@ -89,8 +92,8 @@ class TestCrypto:
             for i in wallets_to_run:
                 executor.submit(self.run_wallet, i, url, action)
 
-    def test_x1ecochain(self):
-        for i in range(134, 180):
+    def tst_x1ecochain(self):
+        for i in range(96, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://t.x1.one/?rcode=9Jd82wqL")
@@ -102,7 +105,7 @@ class TestCrypto:
                 self.teardown(playwright, browser)
 
     def test_veerarewards(self):
-        for i in range(0, 180):
+        for i in range(63, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://hub.veerarewards.com/loyalty?referral_code=CCO013WD")
@@ -114,7 +117,7 @@ class TestCrypto:
                 self.teardown(playwright, browser)
 
     def test_decibel(self):
-        for i in range(7, 180):
+        for i in range(0, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://app.decibel.trade/trade/BTC-USD")
