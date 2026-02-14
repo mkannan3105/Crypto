@@ -22,7 +22,7 @@ class ProjectPage:
          # Confirm MetaMask transaction
          popup = self.page.context.wait_for_event("page")
          popup.wait_for_load_state()
-         popup.wait_for_selector("[data-testid='confirm-footer-button']", timeout=30000)
+         popup.wait_for_selector("[data-testid='confirm-footer-button']", timeout=40000)
          popup.locator("[data-testid='confirm-footer-button']").click()
          popup.close()
 
@@ -31,7 +31,7 @@ class ProjectPage:
          time.sleep(2)
          popup = self.page.context.wait_for_event("page")
          popup.wait_for_load_state()
-         popup.wait_for_selector("[data-testid='page-container-footer-next']", timeout=30000)
+         popup.wait_for_selector("[data-testid='page-container-footer-next']", timeout=40000)
          popup.locator("[data-testid='page-container-footer-next']").click()
          popup.close()
 
@@ -39,14 +39,14 @@ class ProjectPage:
          # Handle transaction confirmation popup
          time.sleep(2)
          popup = self.page.context.wait_for_event("page")
-         popup.wait_for_selector("[data-testid='confirmation-submit-button']", timeout=30000)
+         popup.wait_for_selector("[data-testid='confirmation-submit-button']", timeout=40000)
          popup.locator("[data-testid='confirmation-submit-button']").click()
 
     def wallet_confirm_sign_in_pop(self):
          # Handle transaction confirmation popup
          time.sleep(2)
          popup = self.page.context.wait_for_event("page")
-         popup.wait_for_selector("[data-testid='confirm-sign-in-confirm-snap-footer-button']", timeout=30000)
+         popup.wait_for_selector("[data-testid='confirm-sign-in-confirm-snap-footer-button']", timeout=40000)
          popup.locator("[data-testid='confirm-sign-in-confirm-snap-footer-button']").click()
 
     def ethereal_trade(self):
@@ -317,6 +317,7 @@ class ProjectPage:
         self.wallet_connect_pop()
         # Handle transaction approve popup
         self.wallet_confirmation_pop()
+        time.sleep(2)
         # Handle transaction approve popup
         self.wallet_approve_pop()
         self.page.get_by_role("button", name="Get ECO Points").click()
@@ -324,68 +325,57 @@ class ProjectPage:
         time.sleep(2)
         locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']")
         locator.wait_for(state="visible", timeout=30000)
-        self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
-        self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
-        time.sleep(2)
-        self.page.get_by_role("button", name="Request").click()
         time.sleep(1)
-        max_x1t = self.page.locator("//span[text()='Your balance is above 500 X1t.']")
-        if max_x1t.is_visible():
-            self.page.locator(".Cross > path").click()
-            locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
-            locator.wait_for(state="visible", timeout=30000)
-            self.page.locator(
-                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
-            time.sleep(2)
-            if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
-               self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
-            else:
-               self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
-            time.sleep(2)
-            self.page.get_by_placeholder("0.0").click()
-            self.page.get_by_placeholder("0.0").fill("499")
-            self.page.get_by_role("button", name="Random Address").click()
-            self.page.get_by_role("button", name="Send X1T Coins").click()
-            # Handle transaction approve popup
-            self.wallet_confirmation_pop()
-            time.sleep(1)
+        self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
+        time.sleep(1)
+        self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
+        time.sleep(1)
+        self.page.get_by_role("button", name="Request").click()
+        time.sleep(2)
+        #self.page.pause()
+        invalid = self.page.locator("//*[text()='Invalid: ']")
+        if invalid.is_visible():
             self.page.locator(".Cross").click()
-            time.sleep(1)
-            self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
-            time.sleep(1)
-            self.page.locator(
-                "div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
-            time.sleep(1)
-            self.page.get_by_role("button", name="Request").click()
-            time.sleep(1)
-            self.page.locator(".Cross > path").click()
-            locator = self.page.locator(
-                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
-            locator.wait_for(state="visible", timeout=30000)
-            self.page.locator(
-                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
-
+            time.sleep(2)
+            self.page.get_by_role("button", name="Claim", exact=True).click()
+            time.sleep(2)
         else:
-            self.page.locator(".Cross > path").click()
-            time.sleep(1)
-            locator = self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']")
-            locator.wait_for(state="visible", timeout=30000)
-            self.page.locator(
-                "//*[contains(@class,'Quest') and .//*[text()='Claim Faucet']]//button[normalize-space()='Claim']").click()
-            time.sleep(1)
-            if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
-               self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
-            else:
-               self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
-            time.sleep(1)
-            self.page.get_by_role("button", name="1,0 X1T").click()
+            claim = self.page.locator("//*[text()='You have claimed ']")
+            claim.wait_for(state="visible", timeout=20000)
+            time.sleep(2)
+            self.page.locator(".Cross").click()
+            time.sleep(2)
+            self.page.get_by_role("button", name="Claim", exact=True).click()
+            time.sleep(2)
+        if self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").is_visible():
+            self.page.locator("//span[normalize-space()='Send X1T']/following::button[normalize-space()='Start'][1]").click()
+        else:
+            self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div > .Quest > .Content > .BottomContent > .ButtonElement").click()
+        time.sleep(2)
+        balance_text = self.page.get_by_text("Balance:").inner_text()
+        # extract number
+        balance = float(re.search(r"[\d.]+", balance_text).group())
+        keep_amount = 20
+        if balance > keep_amount:
+            amount_to_send = round(balance - keep_amount, 2)
+            # fill amount
+            self.page.get_by_placeholder("0.0").fill(str(amount_to_send))
             self.page.get_by_role("button", name="Random Address").click()
             self.page.get_by_role("button", name="Send X1T Coins").click()
             # Handle transaction approve popup
             self.wallet_confirmation_pop()
+            time.sleep(2)
             self.page.locator(".Cross").click()
             time.sleep(1)
-            self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
+            self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
+            time.sleep(1)
+        else:
+            print(f"Balance is less than {keep_amount}. Not sending.")
+            self.page.locator(".Cross").click()
+            time.sleep(1)
+            self.page.locator(
+                "//*[contains(@class,'Quest') and .//*[text()='Send X1T']]//button[normalize-space()='Claim']").click()
             time.sleep(1)
 
     def test_fhenix(self):
@@ -542,10 +532,14 @@ class ProjectPage:
         self.wallet_confirmation_pop()
         self.page.evaluate("window.scrollBy(0, 1000)")
         time.sleep(4)
-        self.page.get_by_role("button", name="Check in ").click()
-        locator = self.page.locator("//*[text()='Check-In Succeeded!']")
-        locator.wait_for(state="visible", timeout=40000)
-        self.page.get_by_role("button", name="").click()
+        already_claimed = self.page.locator("//*[text()='Great job!']")
+        if already_claimed.is_visible():
+            print("Already Claimed")
+        else:
+            self.page.get_by_role("button", name="Check in ").click()
+            locator = self.page.locator("//*[text()='Check-In Succeeded!']")
+            locator.wait_for(state="visible", timeout=40000)
+            self.page.get_by_role("button", name="").click()
 
     def test_decibel(self):
         self.page.get_by_role("button", name="Skip for now & follow later").click()
@@ -597,6 +591,30 @@ class ProjectPage:
         self.page.get_by_role("textbox", name="Avail. to deposit").fill("100")
         self.page.get_by_role("button", name="Deposit").nth(1).click()
         time.sleep(2)
+
+    def test_konnex(self):
+        time.sleep(3)
+        self.page.get_by_label("").get_by_text("Connect Wallet").click()
+        self.page.locator("a").filter(has_text="Connect with Ethereum").click()
+        self.page.get_by_text("MetaMaskInstalled").click()
+        # Handle MetaMask connection popup
+        self.wallet_connect_pop()
+        # Confirm MetaMask transaction
+        self.wallet_confirmation_pop()
+        self.page.evaluate("window.scrollBy(0, 1000)")
+        time.sleep(4)
+        already_claimed = self.page.locator("//*[text()='Great job!']")
+        if already_claimed.is_visible():
+            print("Already Claimed")
+        else:
+            self.page.get_by_role("button", name="Check in ").click()
+            locator = self.page.locator("//*[text()='Check-In Succeeded!']")
+            locator.wait_for(state="visible", timeout=40000)
+            self.page.get_by_role("button", name="").click()
+
+    def test_robinhood(self):
+        self.page.pause()
+
 
 
 
