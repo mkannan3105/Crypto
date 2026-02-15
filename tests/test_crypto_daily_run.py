@@ -40,7 +40,7 @@ class TestCryptoDailyRun:
             playwright.stop()
 
     def test_x1ecochain(self):
-        for i in range(154, 180):
+        for i in range(0, 180):
             playwright, browser, page = self.setup(i)
             if not page:
                 print(f"❌ Setup failed for wallet {i}")
@@ -55,7 +55,7 @@ class TestCryptoDailyRun:
                 self.teardown(playwright, browser)
 
     def test_veerarewards(self):
-        for i in range(129, 180):
+        for i in range(0, 180):
             playwright, browser, page = self.setup(i)
             if not page:
                 print(f"❌ Setup failed for wallet {i}")
@@ -101,7 +101,7 @@ class TestCryptoDailyRun:
                 self.teardown(playwright, browser)
 
     def test_decibel(self):
-        for i in range(0, 180):
+        for i in range(13, 180):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://app.decibel.trade/trade/BTC-USD")
