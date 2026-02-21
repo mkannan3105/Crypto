@@ -327,7 +327,7 @@ class ProjectPage:
         locator.wait_for(state="visible", timeout=30000)
         time.sleep(1)
         self.page.locator("//*[contains(@class,'Quest') and .//*[text()='Daily Login']]//button[normalize-space()='Claim']").click()
-        time.sleep(1)
+        time.sleep(2)
         self.page.locator("div:nth-child(4) > .QuestsContent > .Quests > div:nth-child(2) > .Quest > .Content > .BottomContent > .ButtonElement").click()
         time.sleep(1)
         self.page.get_by_role("button", name="Request").click()
@@ -592,6 +592,7 @@ class ProjectPage:
         self.page.locator("[id=\"radio-group:_R_abinpfiusnildb_:radio:sellShort\"]").click()
         self.page.get_by_test_id("place-order-button").click()
         time.sleep(2)
+        """
         self.page.get_by_role("link", name="Vaults").click()
         self.page.get_by_role("cell", name="Decibel Protocol Vault").click()
         #self.page.goto("https://app.decibel.trade/vaults")
@@ -600,6 +601,7 @@ class ProjectPage:
         self.page.get_by_role("textbox", name="Avail. to deposit").fill("100")
         self.page.get_by_role("button", name="Deposit").nth(1).click()
         time.sleep(2)
+        """
 
     def test_konnex(self):
         time.sleep(3)

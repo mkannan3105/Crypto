@@ -12,6 +12,8 @@ class TestCryptoDailyRun:
 
     def setup(self, i=0, clean_profile=True):
         profile_name = f"profile_{i}"
+        playwright = None
+        browser = None
         try:
             playwright, browser = launch_browser(
                 profile_name=profile_name,
@@ -31,6 +33,10 @@ class TestCryptoDailyRun:
             return playwright, browser, page
         except Exception as e:
             print(f"❌ Wallet {i} - MetaMask setup not working: {e}")
+            if browser:
+                browser.close()
+            if playwright:
+                playwright.stop()
             return None, None, None
 
     def teardown(self, playwright, browser):
@@ -40,7 +46,7 @@ class TestCryptoDailyRun:
             playwright.stop()
 
     def test_x1ecochain(self):
-        for i in range(0, 180):
+        for i in range(0, 350):
             playwright, browser, page = self.setup(i)
             if not page:
                 print(f"❌ Setup failed for wallet {i}")
@@ -52,10 +58,10 @@ class TestCryptoDailyRun:
             except Exception as e:
                 print("❌ Wallet failed", i)
             finally:
-                self.teardown(playwright, browser)
+               self.teardown(playwright, browser)
 
     def test_veerarewards(self):
-        for i in range(0, 180):
+        for i in range(0, 350):
             playwright, browser, page = self.setup(i)
             if not page:
                 print(f"❌ Setup failed for wallet {i}")
@@ -101,7 +107,7 @@ class TestCryptoDailyRun:
                 self.teardown(playwright, browser)
 
     def test_decibel(self):
-        for i in range(13, 180):
+        for i in range(0, 350):
             playwright, browser, page = self.setup(i)
             try:
                 page.goto("https://app.decibel.trade/trade/BTC-USD")

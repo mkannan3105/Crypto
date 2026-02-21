@@ -8,7 +8,7 @@ USER_DATA_DIR = os.path.join(os.getcwd(), "playwright_profile")
 
 failed_wallets = []
 
-for run_id in range(260, 1001):
+for run_id in range(544, 1500):
     #print(f"\n🚀 Starting wallet {run_id}")
 
     context = None
@@ -43,7 +43,7 @@ for run_id in range(260, 1001):
             time.sleep(5)
             context.pages[0].close()
 
-            time.sleep(10)
+            time.sleep(15)
             page.goto(f"chrome-extension://{extension_id}/home.html")
             time.sleep(2)
 
