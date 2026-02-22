@@ -1,5 +1,6 @@
 import sys, os
 import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -7,6 +8,10 @@ from playwright_setup import launch_browser
 from pages.metamask_page import MetaMaskPage
 from pages.project_page import ProjectPage
 import config.config as cfg
+
+
+TOTAL_WALLETS = 1000
+MAX_PARALLEL = 3  # 🔥 adjust based on your machine
 
 
 class TestCryptoDailyRun:
@@ -21,31 +26,64 @@ class TestCryptoDailyRun:
         browser = None
 
         try:
+            # 🔥 stagger launch to reduce burst load
+            time.sleep((i % MAX_PARALLEL) * 2)
+
             playwright, browser = launch_browser(
                 profile_name=profile_name,
                 clean_profile=clean_profile,
                 headless=False
             )
 
-            # ✅ Wait for MetaMask tab (with retry)
-            try:
-                metamask_tab = browser.wait_for_event("page", timeout=60000)
-            except Exception:
-                print(f"⚠️ Wallet {i} - retrying MetaMask tab...")
-                metamask_tab = browser.wait_for_event("page", timeout=30000)
+            # 🔥 give MV3 extension cold start time
+            time.sleep(4)
 
-            if "chrome-extension://" not in metamask_tab.url:
+            metamask_tab = None
+
+            # ================================
+            # ✅ robust popup detection
+            # ================================
+            for attempt in range(4):
+                try:
+                    page = browser.wait_for_event("page", timeout=60000)
+
+                    if page and "chrome-extension://" in page.url:
+                        metamask_tab = page
+                        break
+
+                except Exception:
+                    print(f"⚠️ Wallet {i} - retry MetaMask ({attempt + 1}/4)")
+                    time.sleep(3)
+
+            # 🔥 fallback scan (VERY IMPORTANT)
+            if not metamask_tab:
+                for p in browser.pages:
+                    if "chrome-extension://" in p.url:
+                        metamask_tab = p
+                        break
+
+            if not metamask_tab:
                 raise Exception("MetaMask extension did not load")
 
-            # ✅ Close extra tabs
-            for p in browser.pages[:-1]:
-                time.sleep(1)
-                p.close()
+            # ================================
+            # ✅ close garbage tabs
+            # ================================
+            for p in list(browser.pages):
+                if p != metamask_tab:
+                    try:
+                        p.close()
+                    except:
+                        pass
 
+            metamask_tab.bring_to_front()
             metamask_tab.reload()
+            metamask_tab.wait_for_load_state("domcontentloaded")
+
             page = metamask_tab
 
-            # ✅ Import wallet
+            # ================================
+            # ✅ import wallet
+            # ================================
             metamask = MetaMaskPage(page)
             metamask.import_wallet(
                 self.SEED_WORDS_LIST[i],
@@ -57,20 +95,19 @@ class TestCryptoDailyRun:
         except Exception as e:
             print(f"❌ Wallet {i} - MetaMask setup failed: {type(e).__name__}: {e}")
 
-            if browser:
-                try:
+            try:
+                if browser:
                     browser.close()
-                except:
-                    pass
+            except:
+                pass
 
-            if playwright:
-                try:
+            try:
+                if playwright:
                     playwright.stop()
-                except:
-                    pass
+            except:
+                pass
 
             return None, None, None
-
     # =========================================================
     # 🔹 TEARDOWN
     # =========================================================
@@ -87,29 +124,6 @@ class TestCryptoDailyRun:
         except:
             pass
 
-# =============================================================
-# 🔹 PARALLEL ENTRY FUNCTION (VERY IMPORTANT)
-# =============================================================
-def run_single_wallet(i: int):
-    test = TestCryptoDailyRun()
-    playwright, browser, page = test.setup(i)
-
-    if not page:
-        print(f"❌ Setup failed for wallet {i}")
-        return
-
-    try:
-        page.goto("https://hub.veerarewards.com/loyalty?referral_code=MKANNAN3")
-        ProjectPage(page).test_veerarewards()
-        print(f"✅ Completed wallet {i}")
-
-    except Exception as e:
-        print(f"❌ Wallet failed {i}: {e}")
-
-    finally:
-        test.teardown(playwright, browser)
-
-
     def test_x1ecochain(self):
         for i in range(0, 1000):
             playwright, browser, page = self.setup(i)
@@ -125,79 +139,77 @@ def run_single_wallet(i: int):
             finally:
                self.teardown(playwright, browser)
 
-    """
-    def test_veerarewards(self):
-        for i in range(0, 1000):
-            playwright, browser, page = self.setup(i)
-            if not page:
-                print(f"❌ Setup failed for wallet {i}")
-                continue  # 👈 go to next wallet
-            try:
-                page.goto("https://hub.veerarewards.com/loyalty?referral_code=MKANNAN3")
-                ProjectPage(page).test_veerarewards()
-                print("✅ Completed wallet", i)
-            except Exception as e:
-                print("❌ Wallet failed", i)
-            finally:
-                self.teardown(playwright, browser)
-    """
-
-    def test_konnex(self):
-        # Weekly claim
-        for i in range(0, 1):
-            playwright, browser, page = self.setup(i)
-            if not page:
-                print(f"❌ Setup failed for wallet {i}")
-                continue  # 👈 go to next wallet
-            try:
-                page.goto("https://hub.konnex.world/points?referral_code=K31CE63L")
-                ProjectPage(page).test_konnex()
-                print("✅ Completed wallet", i)
-            except Exception as e:
-                print("❌ Wallet failed", i)
-            finally:
-                self.teardown(playwright, browser)
-
-    def test_hotstuff_trade(self):
-        for i in range(0, 12): # 0-12 Wallet
-            playwright, browser, page = self.setup(i)
-            if not page:
-                print(f"❌ Setup failed for wallet {i}")
-                continue  # 👈 go to next wallet
-            try:
-                page.goto("https://testnet.hotstuff.trade/join/mkannan3105")
-                ProjectPage(page).testnet_hotstuff_trade()
-                print("✅ Completed wallet", i)
-            except Exception as e:
-                print("❌ Wallet failed", i)
-            finally:
-                self.teardown(playwright, browser)
-
-    def test_decibel(self):
-        for i in range(0, 1000):
-            playwright, browser, page = self.setup(i)
-            try:
-                page.goto("https://app.decibel.trade/trade/BTC-USD")
-                ProjectPage(page).test_decibel()
-                print("✅ Completed wallet", i)
-            except Exception as e:
-                print("❌ Wallet failed", i)
-            finally:
-                self.teardown(playwright, browser)
-
-def run_single_wallet(i: int):
+# =============================================================
+# 🔥 PARALLEL WORKER (COMMON FOR ALL TESTS)
+# =============================================================
+def run_wallet_flow(i: int, flow_name: str):
     test = TestCryptoDailyRun()
     playwright, browser, page = test.setup(i)
 
     if not page:
-         print(f"❌ Setup failed for wallet {i}")
-         return
+        print(f"❌ Setup failed for wallet {i}")
+        return
 
     try:
-         page.goto("https://hub.veerarewards.com/loyalty?referral_code=MKANNAN3")
-         ProjectPage(page).test_veerarewards()
-         print("✅ Completed wallet", i)
+        page.wait_for_load_state("networkidle")
+        time.sleep(2)
+
+        project = ProjectPage(page)
+
+        if flow_name == "veerarewards":
+            page.goto("https://hub.veerarewards.com/loyalty?referral_code=MKANNAN3")
+            project.test_veerarewards()
+
+        elif flow_name == "x1":
+            page.goto("https://t.x1.one/?rcode=9Jd82wqL")
+            project.test_konnex()
+
+        elif flow_name == "konnex":
+            page.goto("https://hub.konnex.world/points?referral_code=K31CE63L")
+            project.test_konnex()
+
+        elif flow_name == "hotstuff":
+            page.goto("https://testnet.hotstuff.trade/join/mkannan3105")
+            project.testnet_hotstuff_trade()
+
+        elif flow_name == "decibel":
+            page.goto("https://app.decibel.trade/trade/BTC-USD")
+            project.test_decibel()
+
+        print(f"✅ Completed wallet {i} [{flow_name}]")
+
     except Exception as e:
-         print("❌ Wallet failed", i, e)
+        print(f"❌ Wallet failed {i} [{flow_name}]: {e}")
+
     finally:
-         test.teardown(playwright, browser)
+        test.teardown(playwright, browser)
+
+
+# =============================================================
+# 🚀 MASTER PARALLEL RUNNER
+# =============================================================
+def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WALLETS):
+    print(f"🚀 Starting parallel run: {flow_name} [{start_index} → {end_index}]")
+
+    with ProcessPoolExecutor(max_workers=MAX_PARALLEL) as executor:
+        futures = [
+            executor.submit(run_wallet_flow, i, flow_name)
+            for i in range(start_index, end_index)
+        ]
+
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                print("❌ Worker crashed:", e)
+
+
+# =============================================================
+# ▶️ MAIN (RUN WHAT YOU WANT)
+# =============================================================
+if __name__ == "__main__":
+    #run_parallel("veerarewards", start_index=700, end_index=1000)
+    #run_parallel("x1", 0)
+    # run_parallel("konnex", 1)
+    # run_parallel("hotstuff", 12)
+    run_parallel("decibel", 0)
