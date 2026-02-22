@@ -8,7 +8,7 @@ USER_DATA_DIR = os.path.join(os.getcwd(), "playwright_profile")
 
 failed_wallets = []
 
-for run_id in range(544, 1500):
+for run_id in range(578, 1500):
     #print(f"\n🚀 Starting wallet {run_id}")
 
     context = None
@@ -27,31 +27,14 @@ for run_id in range(544, 1500):
                     f"--load-extension={EXTENSION_PATH}",
                 ],
             )
-
-            # ⚠️ your original wait (kept as requested)
-            context.wait_for_event("serviceworker")
-
-            background = context.service_workers
-            if not background:
-                raise Exception("No service worker found. MetaMask not loaded.")
-
-            extension_url = background[0].url
-            extension_id = extension_url.split("/")[2]
-
-            # Open MetaMask UI
-            page = context.new_page()
-            time.sleep(5)
-            context.pages[0].close()
-
-            time.sleep(15)
-            page.goto(f"chrome-extension://{extension_id}/home.html")
-            time.sleep(2)
-
-            if len(context.pages) > 1:
-                context.pages[1].close()
-
-            time.sleep(1)
-
+            metamask_tab = context.wait_for_event("page")
+            if "chrome-extension://" not in metamask_tab.url:
+                raise Exception("MetaMask extension did not load")
+            for p in context.pages[:-1]:
+                time.sleep(1)
+                p.close()
+            metamask_tab.reload()
+            page = metamask_tab
             # ===== ONBOARDING =====
             page.wait_for_selector("#onboarding__terms-checkbox", timeout=60000)
             page.locator("#onboarding__terms-checkbox").click()
