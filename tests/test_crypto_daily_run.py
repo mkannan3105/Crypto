@@ -173,7 +173,7 @@ def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WA
 # ▶️ MAIN (RUN WHAT YOU WANT)
 # =============================================================
 if __name__ == "__main__":
-    #run_parallel("veerarewards", start_index=0, end_index=1000)
+    run_parallel("veerarewards", start_index=0, end_index=1000)
     run_parallel("x1", start_index=0, end_index=1000, MAX_PARALLEL=1)
     #run_parallel("konnex", start_index=0, end_index=1)
     #run_parallel("hotstuff", start_index=0, end_index=12)
