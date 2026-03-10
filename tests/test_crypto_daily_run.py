@@ -8,7 +8,7 @@ from pages.project_page import ProjectPage
 import config.config as cfg
 
 TOTAL_WALLETS = 1000
-MAX_PARALLEL = 1  # 🔥 adjust based on your machine
+MAX_PARALLEL = 2  # 🔥 adjust based on your machine
 
 class TestCryptoDailyRun:
     SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(1000)]
@@ -21,7 +21,7 @@ class TestCryptoDailyRun:
         browser = None
         try:
             # 🔥 stagger launch to reduce burst load
-            time.sleep((i % MAX_PARALLEL) * 2)
+            time.sleep((i % MAX_PARALLEL) * 3)
             playwright, browser = launch_browser(
                 profile_name=profile_name,
                 clean_profile=clean_profile,
@@ -33,15 +33,16 @@ class TestCryptoDailyRun:
             # ================================
             # ✅ robust popup detection
             # ================================
-            for attempt in range(4):
+            for attempt in range(1):
                 try:
-                    page = browser.wait_for_event("page", timeout=60000)
+                    page = browser.wait_for_event("page", timeout=30000)
                     if page and "chrome-extension://" in page.url:
                         metamask_tab = page
                         break
                 except Exception:
                     print(f"⚠️ Wallet {i} - retry MetaMask ({attempt + 1}/4)")
-                    time.sleep(3)
+                    #time.sleep(3)
+                    time.sleep(1)
             # 🔥 fallback scan (VERY IMPORTANT)
             if not metamask_tab:
                 for p in browser.pages:
@@ -60,7 +61,7 @@ class TestCryptoDailyRun:
                     except:
                         pass
             metamask_tab.bring_to_front()
-            metamask_tab.reload()
+            #metamask_tab.reload()
             metamask_tab.wait_for_load_state("domcontentloaded")
             page = metamask_tab
             # ================================
@@ -100,6 +101,7 @@ class TestCryptoDailyRun:
         except:
             pass
 
+    """
     def test_x1ecochain(self):
         for i in range(0, 1000):
             playwright, browser, page = self.setup(i)
@@ -107,15 +109,14 @@ class TestCryptoDailyRun:
                 print(f"❌ Setup failed for wallet {i}")
                 continue  # 👈 go to next wallet
             try:
-                page.new_page()
-                page.goto("https://t.x1.one/?rcode=9Jd82wqL")
+                page.goto("https://t.x1eco.com/?rcode=9Jd82wqL")
                 ProjectPage(page).testnet_x1ecochain()
                 print("✅ Completed wallet", i)
             except Exception as e:
                 print("❌ Wallet failed", i)
             finally:
                self.teardown(playwright, browser)
-
+    """
 # =============================================================
 # 🔥 PARALLEL WORKER (COMMON FOR ALL TESTS)
 # =============================================================
@@ -126,16 +127,15 @@ def run_wallet_flow(i: int, flow_name: str):
         print(f"❌ Setup failed for wallet {i}")
         return
     try:
-        page.wait_for_load_state("networkidle")
+        #page.wait_for_load_state("networkidle")
+        page.wait_for_load_state("domcontentloaded")
         time.sleep(2)
         project = ProjectPage(page)
         if flow_name == "veerarewards":
             page.goto("https://hub.veerarewards.com/loyalty?referral_code=MKANNAN3")
             project.test_veerarewards()
         elif flow_name == "x1":
-            time.sleep(10)
-            page.goto("https://t.x1.one/?rcode=9Jd82wqL")
-            time.sleep(100)
+            page.goto("https://t.x1eco.com/?rcode=9Jd82wqL")
             project.testnet_x1ecochain()
         elif flow_name == "konnex":
             page.goto("https://hub.konnex.world/points?referral_code=K31CE63L")
@@ -151,11 +151,12 @@ def run_wallet_flow(i: int, flow_name: str):
         print(f"❌ Wallet failed {i} [{flow_name}]: {e}")
     finally:
         test.teardown(playwright, browser)
+        time.sleep(2)  # 🔥 cooling gap
 
 # =============================================================
 # 🚀 MASTER PARALLEL RUNNER
 # =============================================================
-def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WALLETS):
+def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WALLETS, MAX_PARALLEL=MAX_PARALLEL):
     print(f"🚀 Starting parallel run: {flow_name} [{start_index} → {end_index}]")
     with ProcessPoolExecutor(max_workers=MAX_PARALLEL) as executor:
         futures = [
@@ -173,7 +174,7 @@ def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WA
 # =============================================================
 if __name__ == "__main__":
     #run_parallel("veerarewards", start_index=0, end_index=1000)
-    run_parallel("x1", 0)
+    run_parallel("x1", start_index=0, end_index=1000, MAX_PARALLEL=1)
     #run_parallel("konnex", start_index=0, end_index=1)
     #run_parallel("hotstuff", start_index=0, end_index=12)
     #run_parallel("decibel", start_index=0, end_index=1000)
