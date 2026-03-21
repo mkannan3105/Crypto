@@ -1,52 +1,55 @@
+# Create Multiple Phantom Wallet
 from playwright.sync_api import sync_playwright
-import time
 
-PHANTOM_PATH = r"C:\Users\mkann\AppData\Local\Google\Chrome\User Data\Default\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\26.6.1_0"
+path_to_extension = r"C:\Users\mkann\AppData\Local\Google\Chrome\User Data\Default\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\26.7.1_0"
 
+TOTAL_WALLETS = 1000   # change to 1000 if needed
 
-def launch_phantom(profile_name="phantom_profile", headless=False):
-    p = sync_playwright().start()
+all_seeds = []
 
-    context = p.chromium.launch_persistent_context(
-        user_data_dir=profile_name,
-        headless=headless,
-        args=[
-            f"--disable-extensions-except={PHANTOM_PATH}",
-            f"--load-extension={PHANTOM_PATH}",
-            "--start-maximized",
-        ],
-    )
+with sync_playwright() as p:
+    for i in range(TOTAL_WALLETS):
+        #print(f"\n🚀 Creating Wallet {i}...")
+        user_data_dir = f"user-data-{i}"
+        context = p.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            headless=False,
+            args=[
+                f"--disable-extensions-except={path_to_extension}",
+                f"--load-extension={path_to_extension}",
+            ],
+        )
+        page = context.pages[0]
+        page.goto("chrome-extension://bfnaelmomeimhlpmgjnjophhpkkoljpa/onboarding.html")
 
-    # 🔥 WAIT for service worker (THIS is key for MV3)
-    service_worker = None
+        # Create wallet
+        page.get_by_role("button", name="Create a New Wallet").click()
+        page.get_by_test_id("create-manual-seed-phrase").click()
 
-    for _ in range(15):
-        workers = context.service_workers
-        if workers:
-            service_worker = workers[0]
-            break
-        time.sleep(1)
+        # Password
+        page.get_by_test_id("onboarding-form-password-input").fill("12345678")
+        page.get_by_test_id("onboarding-form-confirm-password-input").fill("12345678")
+        page.get_by_test_id("onboarding-form-terms-of-service-checkbox").check()
+        page.get_by_test_id("onboarding-form-submit-button").click()
 
-    if not service_worker:
-        raise Exception("Phantom service worker not found")
+        # Wait for recovery phrase
+        page.wait_for_selector('[data-testid^="secret-recovery-phrase-word-input-"]')
+        inputs = page.locator('[data-testid^="secret-recovery-phrase-word-input-"]')
+        words = [inputs.nth(j).input_value() for j in range(inputs.count())]
+        #print(f"✅ Wallet {i} Seed:", words)
+        print(f"SOL_SEED_WORDS{i} =", words)
 
-    # ✅ get extension id dynamically
-    extension_id = service_worker.url.split("/")[2]
-    print("✅ Phantom extension id:", extension_id)
+        all_seeds.append(words)
 
-    # 🔥 OPEN Phantom UI manually (CRITICAL)
-    phantom_page = context.new_page()
-    phantom_page.goto(f"chrome-extension://{extension_id}/popup.html")
+        # Continue flow
+        page.get_by_test_id("onboarding-form-saved-secret-recovery-phrase-checkbox").click()
+        page.get_by_test_id("onboarding-form-submit-button").click()
 
-    phantom_page.wait_for_load_state("domcontentloaded")
+        context.close()
 
-    return p, context, phantom_page
+# ---- Save in required format ----
+with open("seeds.py", "w") as f:
+    for idx, seed in enumerate(all_seeds):
+        f.write(f'SEED_WORDS{idx} = {seed}\n')
 
-if __name__ == "__main__":
-    p, context, phantom = launch_phantom()
-
-    print("🔥 Phantom ready:", phantom.url)
-
-    input("Press Enter to close...")
-    context.close()
-    p.stop()
+print("\n🎉 All wallets created and saved to seeds.py")
