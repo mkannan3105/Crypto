@@ -8,7 +8,7 @@ USER_DATA_DIR = os.path.join(os.getcwd(), "playwright_profile")
 
 failed_wallets = []
 
-for run_id in range(578, 1500):
+for run_id in range(0, 1500):
     #print(f"\n🚀 Starting wallet {run_id}")
 
     context = None
