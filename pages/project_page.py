@@ -531,6 +531,7 @@ class ProjectPage:
         self.wallet_connect_pop()
         # Confirm MetaMask transaction
         self.wallet_confirmation_pop()
+        self.page.get_by_role("button", name="").click()
         self.page.evaluate("window.scrollBy(0, 1000)")
         time.sleep(4)
         already_claimed = self.page.locator("//*[text()='Great job!']")
@@ -613,6 +614,7 @@ class ProjectPage:
         self.wallet_connect_pop()
         # Confirm MetaMask transaction
         self.wallet_confirmation_pop()
+        self.page.get_by_role("button", name="").click()
         self.page.evaluate("window.scrollBy(0, 1000)")
         time.sleep(4)
         already_claimed = self.page.locator("//*[text()='Great job!']")
