@@ -49,6 +49,14 @@ class ProjectPage:
          popup.wait_for_selector("[data-testid='confirm-sign-in-confirm-snap-footer-button']", timeout=40000)
          popup.locator("[data-testid='confirm-sign-in-confirm-snap-footer-button']").click()
 
+    def phantom_wallet_connect(self):
+        popup = self.page.context.wait_for_event("page")
+        popup.wait_for_load_state()
+        popup.wait_for_selector("[data-testid='primary-button']", timeout=40000)
+        popup.locator("[data-testid='primary-button']").click()
+        #popup.get_by_test_id("primary-button").click()
+        popup.close()
+
     def ethereal_trade(self):
         """Click Connect and select MetaMask."""
         # Click Connect > MetaMask to trigger wallet popup
@@ -626,10 +634,39 @@ class ProjectPage:
             locator.wait_for(state="visible", timeout=40000)
             self.page.get_by_role("button", name="").click()
 
-    def test_robinhood(self):
-        self.page.pause()
-
-
-
-
-
+    def test_early_bulk_trade(self):
+        self.page.get_by_role("button", name="Login").click()
+        self.page.get_by_role("button", name="Phantom").click()
+        self.phantom_wallet_connect()
+        self.page.get_by_role("button", name="Continue without Ledger").click()
+        self.phantom_wallet_connect()
+        locator = self.page.locator("[aria-label='Close']")
+        locator.wait_for(state="visible", timeout=40000)
+        locator.click()
+        time.sleep(2)
+        self.page.get_by_role("button").filter(has=self.page.locator("span")).first.click()
+        self.page.get_by_role("button", name="Claim USDC").click()
+        self.phantom_wallet_connect()
+        self.page.get_by_role("heading", name="Received 10,000 mock USDC").click()
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Buy / Long").click()
+        time.sleep(2)
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Sell / Short").click()
+        time.sleep(2)
+        self.page.get_by_role("heading", name="BTC-USD").click()
+        self.page.get_by_text("ETH-USD").nth(1).click()
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Buy / Long").click()
+        time.sleep(2)
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Sell / Short").click()
+        time.sleep(2)
+        self.page.get_by_role("heading", name="ETH-USD").click()
+        self.page.get_by_text("SOL-USD").nth(1).click()
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Buy / Long").click()
+        time.sleep(2)
+        self.page.get_by_role("textbox").fill("1000")
+        self.page.get_by_role("button", name="Sell / Short").click()
+        time.sleep(2)

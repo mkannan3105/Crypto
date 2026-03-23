@@ -1,4 +1,3 @@
-
 import time
 import locators.metamask_locators as mm
 

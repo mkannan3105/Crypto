@@ -1,7 +1,9 @@
 import sys, os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+#sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, ROOT_DIR)
 from playwright_setup import launch_browser
 from pages.metamask_page import MetaMaskPage
 from pages.project_page import ProjectPage
@@ -173,8 +175,8 @@ def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WA
 # ▶️ MAIN (RUN WHAT YOU WANT)
 # =============================================================
 if __name__ == "__main__":
-    run_parallel("veerarewards", start_index=0, end_index=1000)
-    #run_parallel("x1", start_index=0, end_index=1000, MAX_PARALLEL=1)
+    #run_parallel("veerarewards", start_index=0, end_index=1000)
+    run_parallel("x1", start_index=0, end_index=300, MAX_PARALLEL=1)
     #run_parallel("konnex", start_index=0, end_index=1)
     #run_parallel("hotstuff", start_index=0, end_index=12)
     #run_parallel("decibel", start_index=0, end_index=1000)
