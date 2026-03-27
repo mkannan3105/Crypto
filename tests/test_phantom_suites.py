@@ -172,4 +172,4 @@ def run_parallel(flow_name: str, start_index=0, end_index=TOTAL_WALLETS):
 # ▶️ MAIN
 # =============================================================
 if __name__ == "__main__":
-    run_parallel("test_early_bulk_trade", 0, 1000)
+    run_parallel("test_early_bulk_trade", 400, 500)
