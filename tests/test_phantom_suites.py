@@ -22,7 +22,7 @@ class TestPhantomRun:
     # 🔹 SETUP
     # =========================================================
     def setup(self, i=0, clean_profile=True):
-        profile_name = f"profile_{i}"
+        profile_name = f"profile_phantom_{i}"
         playwright = None
         browser = None
 
@@ -36,7 +36,7 @@ class TestPhantomRun:
                 headless=False
             )
 
-            time.sleep(4)  # extension load time
+            time.sleep(6)  # extension load time
 
             phantom_tab = None
 
@@ -172,4 +172,4 @@ def run_parallel(flow_name: str, start_index=0, end_index=TOTAL_WALLETS):
 # ▶️ MAIN
 # =============================================================
 if __name__ == "__main__":
-    run_parallel("test_early_bulk_trade", 400, 500)
+    run_parallel("test_early_bulk_trade", 450, 1000)

@@ -1,8 +1,10 @@
 import os
 import shutil
 from playwright.sync_api import sync_playwright
-from config.config import EXTENSION_PATH, USER_DATA_DIR, SOL_EXTENSION_PATH
+#from config.config import EXTENSION_PATH, USER_DATA_DIR, SOL_EXTENSION_PATH
+from config.config import EXTENSION_PATH, USER_DATA_DIR
 
+SOL_EXTENSION_PATH = r"C:\Users\mkann\AppData\Local\Google\Chrome\User Data\Default\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\26.11.0_0"
 # Setup For Metamask
 def launch_browser(profile_name="profile_0", clean_profile=False, headless=False):
     profile_path = os.path.join(USER_DATA_DIR, profile_name)
