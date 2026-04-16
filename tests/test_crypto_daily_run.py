@@ -10,7 +10,7 @@ from pages.project_page import ProjectPage
 import config.config as cfg
 
 TOTAL_WALLETS = 1000
-MAX_PARALLEL = 2  # 🔥 adjust based on your machine
+MAX_PARALLEL = 1  # 🔥 adjust based on your machine
 
 class TestCryptoDailyRun:
     SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(1000)]
@@ -30,7 +30,7 @@ class TestCryptoDailyRun:
                 headless=False
             )
             # 🔥 give MV3 extension cold start time
-            time.sleep(4)
+            time.sleep(6)
             metamask_tab = None
             # ================================
             # ✅ robust popup detection
@@ -148,6 +148,15 @@ def run_wallet_flow(i: int, flow_name: str):
         elif flow_name == "decibel":
             page.goto("https://app.decibel.trade/trade/BTC-USD")
             project.test_decibel()
+        elif flow_name == "fhenix":
+            page.goto("https://test.redact.money/")
+            project.test_fhenix()
+        elif flow_name == "czrex":
+            page.goto("https://quest.czrex.com/loyalty?referral_code=8QJOQUW1")
+            project.test_czrex()
+        elif flow_name == "allox":
+            page.goto("https://app.allox.ai/login")
+            project.test_allox()
         print(f"✅ Completed wallet {i} [{flow_name}]")
     except Exception as e:
         print(f"❌ Wallet failed {i} [{flow_name}]: {e}")
@@ -171,12 +180,15 @@ def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WA
             except Exception as e:
                 print("❌ Worker crashed:", e)
 
-# =============================================================
+# ==============================================s===============
 # ▶️ MAIN (RUN WHAT YOU WANT)
-# =============================================================
+# =================================================ssssss============
 if __name__ == "__main__":
     #run_parallel("veerarewards", start_index=0, end_index=1000)
-    #run_parallel("x1", start_index=300, end_index=1000, MAX_PARALLEL=1)
+    run_parallel("x1", start_index=200, end_index=500, MAX_PARALLEL=3)
     #run_parallel("konnex", start_index=0, end_index=1)
-    run_parallel("hotstuff", start_index=0, end_index=12)
+    #run_parallel("hotstuff", start_index=0, end_index=12)
     #run_parallel("decibel", start_index=0, end_index=1000)
+    #run_parallel("fhenix", start_index=0, end_index=200)
+    #run_parallel("czrex", start_index=100, end_index=1000, MAX_PARALLEL=3)
+    #run_parallel("allox", start_index=0, end_index=500, MAX_PARALLEL=1) 
