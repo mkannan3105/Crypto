@@ -9,11 +9,11 @@ from pages.metamask_page import MetaMaskPage
 from pages.project_page import ProjectPage
 import config.config as cfg
 
-TOTAL_WALLETS = 1000
+TOTAL_WALLETS = 10000
 MAX_PARALLEL = 1  # 🔥 adjust based on your machine
 
 class TestCryptoDailyRun:
-    SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(1000)]
+    SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(10000)]
     # =========================================================
     # 🔹 SETUP
     # =========================================================
@@ -30,21 +30,21 @@ class TestCryptoDailyRun:
                 headless=False
             )
             # 🔥 give MV3 extension cold start time
-            time.sleep(6)
+            time.sleep(3)
             metamask_tab = None
             # ================================
             # ✅ robust popup detection
             # ================================
             for attempt in range(1):
                 try:
-                    page = browser.wait_for_event("page", timeout=30000)
+                    page = browser.wait_for_event("page", timeout=40000)
                     if page and "chrome-extension://" in page.url:
                         metamask_tab = page
                         break
                 except Exception:
-                    print(f"⚠️ Wallet {i} - retry MetaMask ({attempt + 1}/4)")
+                    print(f"⚠️ Wallet {i} - retry MetaMask ({attempt + 2}/4)")
                     #time.sleep(3)
-                    time.sleep(1)
+                    time.sleep(2)
             # 🔥 fallback scan (VERY IMPORTANT)
             if not metamask_tab:
                 for p in browser.pages:
@@ -154,9 +154,9 @@ def run_wallet_flow(i: int, flow_name: str):
         elif flow_name == "czrex":
             page.goto("https://quest.czrex.com/loyalty?referral_code=8QJOQUW1")
             project.test_czrex()
-        elif flow_name == "allox":
-            page.goto("https://app.allox.ai/login")
-            project.test_allox()
+        elif flow_name == "simplechain":
+            page.goto("https://task.simplechain.com?inviteCode=9v673uo9125")
+            project.test_simplechain()
         print(f"✅ Completed wallet {i} [{flow_name}]")
     except Exception as e:
         print(f"❌ Wallet failed {i} [{flow_name}]: {e}")
@@ -167,28 +167,59 @@ def run_wallet_flow(i: int, flow_name: str):
 # =============================================================
 # 🚀 MASTER PARALLEL RUNNER
 # =============================================================
-def run_parallel(flow_name: str, start_index: int = 0, end_index: int = TOTAL_WALLETS, MAX_PARALLEL=MAX_PARALLEL):
-    print(f"🚀 Starting parallel run: {flow_name} [{start_index} → {end_index}]")
-    with ProcessPoolExecutor(max_workers=MAX_PARALLEL) as executor:
+def run_parallel(flow_name: str, start_index: int, end_index: int, max_parallel: int):
+    print(f"🚀 Starting: {flow_name} [{start_index} → {end_index}] | Workers: {max_parallel}")
+
+    with ProcessPoolExecutor(max_workers=max_parallel) as executor:
         futures = [
             executor.submit(run_wallet_flow, i, flow_name)
             for i in range(start_index, end_index)
         ]
+
         for future in as_completed(futures):
             try:
                 future.result()
             except Exception as e:
                 print("❌ Worker crashed:", e)
 
+def run_batched(flow_name: str, batch_size=200, cooldown=900, max_parallel=2,
+                start_index=0, end_index=TOTAL_WALLETS):
+
+    for start in range(start_index, end_index, batch_size):
+        end = min(start + batch_size, end_index)
+
+        print(f"\n🚀 Running batch: {start} → {end} | Flow: {flow_name}")
+        run_parallel(flow_name, start, end, max_parallel)
+
+        if end < end_index:
+            print(f"🧊 Cooling for {cooldown // 60} minutes...")
+            time.sleep(cooldown)
+
+    print(f"✅ Completed wallets {start_index} → {end_index} for flow: {flow_name}")
+
 # ==============================================s===============
 # ▶️ MAIN (RUN WHAT YOU WANT)
 # =================================================ssssss============
 if __name__ == "__main__":
-    #run_parallel("veerarewards", start_index=0, end_index=1000)
-    run_parallel("x1", start_index=200, end_index=500, MAX_PARALLEL=3)
-    #run_parallel("konnex", start_index=0, end_index=1)
-    #run_parallel("hotstuff", start_index=0, end_index=12)
-    #run_parallel("decibel", start_index=0, end_index=1000)
-    #run_parallel("fhenix", start_index=0, end_index=200)
-    #run_parallel("czrex", start_index=100, end_index=1000, MAX_PARALLEL=3)
-    #run_parallel("allox", start_index=0, end_index=500, MAX_PARALLEL=1) 
+    BATCH_SIZE = 100        # smaller batch for small range
+    COOL_DOWN = 300        # 5 mins cooldown
+    MAX_PARALLEL = 3
+
+    START = 0
+    END = 10000
+
+    #run_batched("veerarewards", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+
+    #run_batched("x1", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 0, 300)
+
+    #run_batched("konnex", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+
+    #run_batched("hotstuff", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+
+    #run_batched("decibel", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+
+    #run_batched("fhenix", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+
+    run_batched("czrex", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 4000, 5000)
+
+    #run_batched("simplechain", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)

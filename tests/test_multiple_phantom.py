@@ -2,14 +2,14 @@ import time
 
 from playwright.sync_api import sync_playwright
 
-path_to_extension = r"C:\Users\mkann\AppData\Local\Google\Chrome\User Data\Default\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\26.7.1_0"
+path_to_extension = r"C:\Users\mkann\AppData\Local\Google\Chrome\User Data\Default\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\26.11.0_0"
 
-TOTAL_WALLETS = 1000
+TOTAL_WALLETS = 9000
 
 all_seeds = []
 
 with sync_playwright() as p:
-    for i in range(300, TOTAL_WALLETS + 1):
+    for i in range(8774, TOTAL_WALLETS + 1):
         try:
             #print(f"\n🚀 Creating Wallet {i}...")
             user_data_dir = f"user-data-{i}"
@@ -48,7 +48,8 @@ with sync_playwright() as p:
             page.get_by_test_id("onboarding-form-submit-button").click()
             page.get_by_role("button", name="Continue").click()
             # print(f"✅ Wallet {i} Created")
-            print(f"SOL_SEED_WORDS{i} =", words)
+            #print(f"SOL_SEED_WORDS{i} =", words)
+            print(f"SEED_WORDS{i} =", words)
             context.close()
 
         except Exception as e:

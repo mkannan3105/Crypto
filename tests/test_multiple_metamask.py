@@ -8,10 +8,10 @@ USER_DATA_DIR = os.path.join(os.getcwd(), "playwright_profile")
 
 failed_wallets = []
 
-for run_id in range(0, 1500):
+for run_id in range(1000, 2000):
     #print(f"\n🚀 Starting wallet {run_id}")
 
-    context = None
+    context = Nones
     try:
         # ✅ ALWAYS clean profile for fresh wallet
         clean_profile = True

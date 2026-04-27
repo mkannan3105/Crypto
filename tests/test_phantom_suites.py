@@ -11,17 +11,16 @@ from pages.phantom_page import PhantomPage
 from pages.project_page import ProjectPage
 import config.config as cfg
 
-TOTAL_WALLETS = 1000
+TOTAL_WALLETS = 10000
 MAX_PARALLEL = 2
 
-
 class TestPhantomRun:
-    SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(1000)]
+    SEED_WORDS_LIST = [getattr(cfg, f"SEED_WORDS{i}") for i in range(10000)]
 
     # =========================================================
     # 🔹 SETUP
     # =========================================================
-    def setup(self, i=0, clean_profile=True):
+    def setup(self, i=450, clean_profile=True):
         profile_name = f"profile_phantom_{i}"
         playwright = None
         browser = None
@@ -152,10 +151,10 @@ def run_wallet_flow(i: int, flow_name: str):
 # =============================================================
 # 🚀 MASTER PARALLEL RUNNER
 # =============================================================
-def run_parallel(flow_name: str, start_index=0, end_index=TOTAL_WALLETS):
-    print(f"🚀 Starting Phantom run: {flow_name} [{start_index} → {end_index}]")
+def run_parallel(flow_name: str, start_index: int, end_index: int, max_parallel: int):
+    print(f"🚀 Starting Phantom run: {flow_name} [{start_index} → {end_index}] | Workers: {max_parallel}")
 
-    with ProcessPoolExecutor(max_workers=MAX_PARALLEL) as executor:
+    with ProcessPoolExecutor(max_workers=max_parallel) as executor:
         futures = [
             executor.submit(run_wallet_flow, i, flow_name)
             for i in range(start_index, end_index)
@@ -167,9 +166,37 @@ def run_parallel(flow_name: str, start_index=0, end_index=TOTAL_WALLETS):
             except Exception as e:
                 print("❌ Worker crashed:", e)
 
+def run_batched(flow_name: str, batch_size=200, cooldown=900, max_parallel=2,
+                start_index=0, end_index=TOTAL_WALLETS):
+
+    for start in range(start_index, end_index, batch_size):
+        end = min(start + batch_size, end_index)
+
+        print(f"\n🚀 Running batch: {start} → {end} | Flow: {flow_name}")
+        run_parallel(flow_name, start, end, max_parallel)
+
+        if end < end_index:
+            print(f"🧊 Cooling for {cooldown // 60} minutes...")
+            time.sleep(cooldown)
+
+    print(f"✅ Completed wallets {start_index} → {end_index} for flow: {flow_name}")
 
 # =============================================================
 # ▶️ MAIN
 # =============================================================
 if __name__ == "__main__":
-    run_parallel("test_early_bulk_trade", 450, 1000)
+    BATCH_SIZE = 50     # smaller batch (Phantom is heavier)
+    COOL_DOWN = 300         # 5 mins
+    MAX_PARALLEL = 2
+
+    START = 0
+    END = 10000
+
+    run_batched(
+        "test_early_bulk_trade",
+        batch_size=BATCH_SIZE,
+        cooldown=COOL_DOWN,
+        max_parallel=MAX_PARALLEL,
+        start_index=1000,
+        end_index=2000
+    )
