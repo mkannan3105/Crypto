@@ -688,50 +688,56 @@ class ProjectPage:
         self.phantom_wallet_connect()
         self.page.get_by_role("button", name="Continue without Ledger").click()
         self.phantom_wallet_connect()
-        #self.page.pause()
         locator = self.page.locator("//*[text()='Welcome to BULK Testnet']")
-        locator.wait_for(state="visible", timeout=40000)
-        self.page.get_by_role("img", name="Close").click()
-        #if locator.is_visible():
-        #    self.page.get_by_role("img", name="Close").click()
-            #locator.wait_for(state="visible", timeout=40000)
-            #locator.click()
-        #else:
-        #    print("Welcome to BULK Testnet Not Visible")
-        #page.get_by_role("heading", name="Welcome to BULK Testnet").click()
-        #self.page.get_by_role("img", name="Close").click()
-        #locator = self.page.locator("//*[text()='Welcome to BULK Testnet']")
-        
-        time.sleep(2)
+        try:
+           locator.wait_for(state="visible", timeout=5000)
+           self.page.get_by_role("img", name="Close").click()
+        except:
+           pass  # move to next step
         self.page.get_by_role("button").filter(has=self.page.locator("span")).first.click()
-        self.page.get_by_role("button", name="Claim USDC").click()
-        self.phantom_wallet_connect()
+        try:
+           self.page.get_by_role("button", name="Claim USDC").click()
+           locator = self.page.locator("//*[text()='Received 10,000 mock USDC']")
+           locator.wait_for(state="visible", timeout=5000)
+        except Exception as e:
+           pages = self.page.context.pages
+           # index 0 = main page, others = popups/extensions
+           if len(pages) > 1:
+               popup = pages[-1]  # latest opened page
+               try:
+                  popup.wait_for_load_state()
+                  popup.get_by_test_id("primary-button").click(timeout=15000)
+                  popup.close()
+               except Exception as e2:
+                  print(f"Popup interaction failed: {e2}")
+           else:
+               print("No popup available")
         time.sleep(2)
-        self.page.get_by_role("heading", name="Received 10,000 mock USDC").click()
+        self.page.get_by_role("button", name="Trade").click()
         self.page.get_by_role("textbox").fill("100000")
         self.page.get_by_role("button", name="Buy / Long").click()
-        time.sleep(5)
-        self.page.get_by_role("textbox").fill("100000")
-        self.page.get_by_role("button", name="Sell / Short").click()
-        time.sleep(5)
-        self.page.get_by_role("heading", name="BTC-USD").click()
         time.sleep(1)
-        self.page.get_by_text("ETH-USD").nth(1).click()
-        self.page.get_by_role("textbox").fill("100000")
-        self.page.get_by_role("button", name="Buy / Long").click()
-        time.sleep(5)
         self.page.get_by_role("textbox").fill("100000")
         self.page.get_by_role("button", name="Sell / Short").click()
-        time.sleep(5)
+        time.sleep(1)
+        self.page.get_by_role("heading", name="BTC-USD").click()
+        self.page.get_by_text("ETH-USD").nth(1).click()
+        time.sleep(1)
+        self.page.get_by_role("textbox").fill("100000")
+        self.page.get_by_role("button", name="Buy / Long").click()
+        time.sleep(1)
+        self.page.get_by_role("textbox").fill("100000")
+        self.page.get_by_role("button", name="Sell / Short").click()
+        time.sleep(1)
         self.page.get_by_role("heading", name="ETH-USD").click()
         self.page.get_by_text("SOL-USD").nth(1).click()
         time.sleep(1)
         self.page.get_by_role("textbox").fill("100000")
         self.page.get_by_role("button", name="Buy / Long").click()
-        time.sleep(5)
+        time.sleep(1)
         self.page.get_by_role("textbox").fill("100000")
         self.page.get_by_role("button", name="Sell / Short").click()
-        time.sleep(5)
+        time.sleep(1)
     
     def test_czrex(self):
         time.sleep(3)
@@ -745,7 +751,6 @@ class ProjectPage:
         self.page.get_by_role("button", name="").click()
         #self.page.evaluate("window.scrollBy(0, 1000)")
         time.sleep(4)
-        """
         already_claimed = self.page.locator("//*[text()='Great job!']")
         if already_claimed.is_visible():
             print("Already Claimed")
@@ -754,7 +759,6 @@ class ProjectPage:
             locator = self.page.locator("//*[text()='Check-In Succeeded!']")
             locator.wait_for(state="visible", timeout=40000)
             self.page.get_by_role("button", name="").click()
-        """
 
-    def test_allox(self):
+    def test_simplechain(self):
         self.page.pause()
