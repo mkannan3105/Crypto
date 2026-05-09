@@ -21,7 +21,7 @@ class TestPhantomRun:
     # 🔹 SETUP
     # =========================================================
     def setup(self, i=450, clean_profile=True):
-        profile_name = f"profile_phantom_{i}"
+        profile_name = f"profile_{i}"
         playwright = None
         browser = None
 
@@ -119,34 +119,59 @@ class TestPhantomRun:
 # =============================================================
 # 🔥 PARALLEL WORKER
 # =============================================================
-def run_wallet_flow(i: int, flow_name: str):
-    test = TestPhantomRun()
+# =============================================================
+# 🔥 PARALLEL WORKER (Retry once if wallet flow fails)
+# =============================================================
+def run_wallet_flow(i: int, flow_name: str, retry_count: int = 4):
+    attempt = 0
 
-    playwright, browser, page = test.setup(i)
+    while attempt <= retry_count:
+        test = TestPhantomRun()
 
-    if not page:
-        print(f"❌ Setup failed for wallet {i}")
-        return
+        playwright, browser, page = test.setup(i)
 
-    try:
-        page.wait_for_load_state("domcontentloaded")
-        time.sleep(2)
+        if not page:
+            print(f"❌ Setup failed for wallet {i} | Attempt {attempt + 1}/{retry_count + 1}")
 
-        project = ProjectPage(page)
+            if attempt < retry_count:
+                attempt += 1
+                print(f"🔄 Retrying wallet {i} setup... ({attempt + 1}/{retry_count + 1})")
+                time.sleep(5)
+                continue
 
-        if flow_name == "test_early_bulk_trade":
-            page.goto("https://early.bulk.trade/")
-            project.test_early_bulk_trade()
+            print(f"🚫 Wallet {i} setup permanently failed after {retry_count + 1} attempts")
+            return
 
-        print(f"✅ Completed wallet {i} [{flow_name}]")
+        try:
+            page.wait_for_load_state("domcontentloaded")
+            time.sleep(2)
 
-    except Exception as e:
-        print(f"❌ Wallet failed {i} [{flow_name}]: {e}")
+            project = ProjectPage(page)
 
-    finally:
-        test.teardown(playwright, browser)
-        time.sleep(2)
+            if flow_name == "test_early_bulk_trade":
+                page.goto("https://early.bulk.trade/")
+                project.test_early_bulk_trade()
 
+            print(f"✅ Completed wallet {i} [{flow_name}]")
+            return
+
+        except Exception as e:
+            print(
+                f"❌ Wallet failed {i} [{flow_name}] | "
+                f"Attempt {attempt + 1}/{retry_count + 1}: {e}"
+            )
+
+            if attempt < retry_count:
+                attempt += 1
+                print(f"🔄 Retrying wallet {i}... ({attempt + 1}/{retry_count + 1})")
+                time.sleep(5)
+
+            else:
+                print(f"🚫 Wallet {i} permanently failed after {retry_count + 1} attempts")
+
+        finally:
+            test.teardown(playwright, browser)
+            time.sleep(2)
 
 # =============================================================
 # 🚀 MASTER PARALLEL RUNNER
@@ -186,7 +211,7 @@ def run_batched(flow_name: str, batch_size=200, cooldown=900, max_parallel=2,
 # =============================================================
 if __name__ == "__main__":
     BATCH_SIZE = 50     # smaller batch (Phantom is heavier)
-    COOL_DOWN = 300         # 5 mins
+    COOL_DOWN = 600       # 10 mins
     MAX_PARALLEL = 2
 
     START = 0
@@ -197,6 +222,6 @@ if __name__ == "__main__":
         batch_size=BATCH_SIZE,
         cooldown=COOL_DOWN,
         max_parallel=MAX_PARALLEL,
-        start_index=1000,
-        end_index=2000
+        start_index=2830,
+        end_index=3001
     )

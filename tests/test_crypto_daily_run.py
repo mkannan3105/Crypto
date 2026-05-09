@@ -201,17 +201,17 @@ def run_batched(flow_name: str, batch_size=200, cooldown=900, max_parallel=2,
 # ▶️ MAIN (RUN WHAT YOU WANT)
 # =================================================ssssss============
 if __name__ == "__main__":
-    BATCH_SIZE = 100        # smaller batch for small range
-    COOL_DOWN = 300        # 5 mins cooldown
-    MAX_PARALLEL = 3
+    BATCH_SIZE = 50        # smaller batch for small range
+    COOL_DOWN = 600        # 10 mins cooldown
+    MAX_PARALLEL = 4
 
     START = 0
     END = 10000
 
     #run_batched("veerarewards", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
 
-    #run_batched("x1", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 0, 300)
-
+    run_batched("x1", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 0, 500)
+    #time.sleep(300)
     #run_batched("konnex", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
 
     #run_batched("hotstuff", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
@@ -220,6 +220,6 @@ if __name__ == "__main__":
 
     #run_batched("fhenix", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
 
-    run_batched("czrex", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 4000, 5000)
+    #run_batched("czrex", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, 8800, 10000)
 
-    #run_batched("simplechain", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)
+    #run_batched("simplechain", BATCH_SIZE, COOL_DOWN, MAX_PARALLEL, START, END)qw
